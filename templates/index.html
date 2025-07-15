@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 學習歷程產生器</title>
+</head>
+<body>
+    <h1>AI 學習歷程產生器</h1>
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label>上傳活動照片（可多張）：</label><br>
+        <input type="file" name="images" accept="image/*" multiple required><br><br>
+
+        <label>輸入活動內容（活動名稱、簡介、你的角色、收穫）：</label><br>
+        <textarea name="user_input" rows="6" cols="60" required></textarea><br><br>
+
+        <input type="submit" value="📄 產生學習歷程並下載 Word">
+    </form>
+
+
+    {% if generated_text %}
+        <h2>產生結果：</h2>
+        <div style="white-space: pre-wrap;">{{ generated_text | safe }}</div>
+    {% endif %}
+</body>
+</html>
