@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret")  # for flash
 
 # 1) 讀取 API Key（不要硬寫在檔案）
-GEMINI_API_KEY = "AIzaSyDEjjmrDEQFLxdUA0OsiCGVwUVvgVr7r8w"
+GEMINI_API_KEY = "Your_GEMINI_API_KEY "
 if not GEMINI_API_KEY:
     print("[警告] 尚未設定 GEMINI_API_KEY 環境變數，Gemini 功能將無法使用。")
 GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
