@@ -25,7 +25,7 @@ The system calls the **Google Gemini API** to organize the content, and finally 
 
 ---
 
-## 🛠 使用技術 (Tech Stack)
+##  使用技術 (Tech Stack)
 - **後端 / Backend**: Flask  
 - **AI 生成 / AI Generation**: Google Gemini 1.5 Flash API  
 - **文件產生 / Document Generation**: python-docx  
@@ -47,7 +47,7 @@ The system calls the **Google Gemini API** to organize the content, and finally 
 
 ---
 
-## 🚀 安裝與執行 (Installation & Usage)
+## 安裝與執行 (Installation & Usage)
 
 ### 本地執行 (Local Execution)
 ```bash
@@ -67,12 +67,13 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 ---
 
-## 📑 後續規劃 (Future Plans)
+## 後續規劃 (Future Plans)
 - [ ] 新增 PDF 輸出（LibreOffice / WeasyPrint）  
   Add PDF export (LibreOffice / WeasyPrint)  
 - [ ] 改善圖片處理（支援 PNG/WebP、自動壓縮）  
   Improve image handling (support PNG/WebP, auto compression)  
 - [ ] 優化預覽功能（Markdown → HTML 美化）  
   Enhance preview (render Markdown to HTML)   
-
+- [ ] 架設公開網站，讓所有人都能使用  
+  Host as a public website accessible to everyone 
 ---
