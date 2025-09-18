@@ -1,25 +1,214 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>AI 學習歷程產生器</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>學習歷程產生器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print { .no-print { display:none; } }
+  </style>
 </head>
-<body>
-    <h1>AI 學習歷程產生器</h1>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <label>上傳活動照片（可多張）：</label><br>
-        <input type="file" name="images" accept="image/*" multiple required><br><br>
+<body class="bg-slate-50 text-slate-800">
+  <header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <h1 class="text-lg font-semibold tracking-tight">學習歷程產生器</h1>
+      <nav class="text-sm text-slate-500 hidden md:block">
+        <span class="mr-4">表單</span>
+        <span class="mr-4">預覽</span>
+        <span>下載</span>
+      </nav>
+    </div>
+  </header>
 
-        <label>輸入活動內容（活動名稱、簡介、你的角色、收穫）：</label><br>
-        <textarea name="user_input" rows="6" cols="60" required></textarea><br><br>
+  <main class="mx-auto max-w-6xl px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="lg:col-span-2">
+      <!-- Stepper -->
+      <ol class="flex items-center w-full mb-6">
+        <li class="flex-1 flex items-center after:content-[''] after:flex-1 after:h-px after:bg-slate-300">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold">1</div>
+          <span class="ml-2 text-sm text-slate-600">基本資料</span>
+        </li>
+        <li class="flex-1 flex items-center after:content-[''] after:flex-1 after:h-px after:bg-slate-300">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 text-slate-700 text-xs font-bold">2</div>
+          <span class="ml-2 text-sm text-slate-600">內容撰寫</span>
+        </li>
+        <li class="flex items-center">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-200 text-slate-700 text-xs font-bold">3</div>
+          <span class="ml-2 text-sm text-slate-600">上傳圖片</span>
+        </li>
+      </ol>
 
-        <input type="submit" value="📄 產生學習歷程並下載 Word">
-    </form>
+      <form id="lp-form" action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data" class="space-y-6">
+        <!-- 1) 基本資料 -->
+        <div class="bg-white rounded-2xl shadow p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-base font-semibold">基本資料</h2>
+            <span class="text-xs text-slate-500">*為必填</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-sm">作品主題*</span>
+              <input name="topic" required class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="例：AI 學習歷程產生器" />
+            </label>
+            <label class="block">
+              <span class="text-sm">作者/班級</span>
+              <input name="author" class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="例：高二X班 陳XX" />
+            </label>
+          </div>
+          <label class="block mt-4">
+            <span class="text-sm">摘要（選填，建議提供，避免內容過少）</span>
+            <textarea name="abstract" rows="3" class="mt-1 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="一句話點題→動機→成果/影響"></textarea>
+          </label>
+        </div>
 
+        <!-- 2) 內容撰寫 -->
+        <div class="bg-white rounded-2xl shadow divide-y">
+          <details open class="group">
+            <summary class="cursor-pointer list-none p-5 flex items-center justify-between">
+              <h3 class="text-base font-semibold">主題說明*</h3>
+              <span class="text-xs text-slate-400">建議至少 1–2 句</span>
+            </summary>
+            <div class="p-5 pt-0">
+              <textarea name="topic_desc" rows="4" required class="w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="專題背景、問題意識、想解決什麼"></textarea>
+            </div>
+          </details>
 
-    {% if generated_text %}
-        <h2>產生結果：</h2>
-        <div style="white-space: pre-wrap;">{{ generated_text | safe }}</div>
-    {% endif %}
+          <details class="group">
+            <summary class="cursor-pointer list-none p-5 flex items-center justify-between">
+              <h3 class="text-base font-semibold">成果展示（選填）</h3>
+              <span class="text-xs text-slate-400">建議至少 1–2 句</span>
+            </summary>
+            <div class="p-5 pt-0">
+              <textarea name="result" rows="4" class="w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="做了什麼、指標與效益"></textarea>
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer list-none p-5 flex items-center justify-between">
+              <h3 class="text-base font-semibold">心得反思（選填）</h3>
+              <span class="text-xs text-slate-400">建議至少 1–2 句</span>
+            </summary>
+            <div class="p-5 pt-0">
+              <textarea name="reflection" rows="4" class="w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="學到什麼、遇到的限制、想改進的地方"></textarea>
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer list-none p-5 flex items-center justify-between">
+              <h3 class="text-base font-semibold">參考資料（選填）</h3>
+            </summary>
+            <div class="p-5 pt-0">
+              <textarea name="references" rows="3" class="w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500" placeholder="參考什麼資料?"></textarea>
+            </div>
+          </details>
+        </div>
+
+        <!-- 3) 圖片（全部會放最後） -->
+        <div class="bg-white rounded-2xl shadow p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-base font-semibold">活動照片（選填，多張）</h2>
+            <span class="text-xs text-slate-500">上傳後可拖曳排序；產出時一律排在最後</span>
+          </div>
+          <input id="photos" name="images" type="file" accept="image/*" multiple class="block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+          <div id="thumbs" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+        </div>
+
+        <!-- 4) 產出選項與送出 -->
+        <div class="bg-white rounded-2xl shadow p-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label class="flex items-center gap-2 text-sm">
+              <input type="radio" name="output" value="pdf" class="rounded" checked /> PDF
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+              <input type="radio" name="output" value="docx" class="rounded" /> DOCX
+            </label>
+            <label class="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="preview" value="1" class="rounded" /> 先產 HTML 預覽
+            </label>
+          </div>
+          <div class="mt-4 flex items-center gap-3">
+            <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-2.5 text-white font-medium hover:bg-blue-700">產生檔案</button>
+            <button type="button" id="fake-submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-100 px-4 py-2 text-slate-700 hover:bg-slate-200">預覽</button>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">送出囉!</p>
+        </div>
+      </form>
+    </section>
+
+    <!-- 右側：前端預覽 -->
+    <aside class="lg:col-span-1">
+      <div class="lg:sticky lg:top-20 space-y-4">
+        <div class="bg-white rounded-2xl shadow p-5">
+          <h3 class="text-base font-semibold mb-3">預覽 </h3>
+          <div id="preview" class="prose prose-slate max-w-none text-sm">
+            <p class="text-slate-500">按下「預覽」查看。</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="mx-auto max-w-6xl px-4 py-10 text-center text-xs text-slate-500">
+    建議製作完還需要自行修正，會有一點誤差。  
+  </footer>
+
+  <script>
+    // 圖片縮圖 + 可拖曳排序（簡易）
+    const photos = document.getElementById('photos');
+    const thumbs = document.getElementById('thumbs');
+
+    photos?.addEventListener('change', () => {
+      thumbs.innerHTML = '';
+      [...photos.files].forEach((file, idx) => {
+        const url = URL.createObjectURL(file);
+        const item = document.createElement('div');
+        item.className = 'bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex flex-col';
+        item.draggable = true;
+        item.dataset.index = idx;
+        item.innerHTML = `
+          <img src="${url}" class="aspect-video object-cover" alt="thumb"/>
+          <div class="p-2 text-xs flex items-center justify-between">
+            <span class="truncate">${file.name}</span>
+            <span class="text-slate-500">${Math.round(file.size/1024)} KB</span>
+          </div>`;
+        item.addEventListener('dragstart', e => { item.classList.add('ring-2','ring-blue-400'); e.dataTransfer.setData('text/plain', item.dataset.index);});
+        item.addEventListener('dragend', () => item.classList.remove('ring-2','ring-blue-400'));
+        item.addEventListener('dragover', e => e.preventDefault());
+        item.addEventListener('drop', e => {
+          e.preventDefault();
+          const from = parseInt(e.dataTransfer.getData('text/plain'),10);
+          const to = parseInt(item.dataset.index,10);
+          if(isNaN(from) || isNaN(to) || from===to) return;
+          const children = [...thumbs.children];
+          thumbs.insertBefore(children[from], to>from? children[to].nextSibling : children[to]);
+          // TODO: 上傳時用這個新順序重組 FormData
+        });
+        thumbs.appendChild(item);
+      });
+    });
+
+    // 前端假預覽
+    const fakeBtn = document.getElementById('fake-submit');
+    const preview = document.getElementById('preview');
+    function val(name){ const el = document.querySelector(`[name="${name}"]`); return el? el.value.trim():''; }
+    fakeBtn?.addEventListener('click', () => {
+      const html = `
+        <h2>${val('topic') || '（未填主題）'}</h2>
+        <p class="text-xs text-slate-500">作者：${val('author') || '—'}</p>
+        ${val('abstract')? `<h3>摘要</h3><p>${val('abstract')}</p>`: ''}
+        <h3>主題說明</h3><p>${val('topic_desc') || '—'}</p>
+        ${val('result')? `<h3>成果展示</h3><p>${val('result')}</p>`: ''}
+        ${val('reflection')? `<h3>心得反思</h3><p>${val('reflection')}</p>`: ''}
+        ${val('references')? `<h3>參考資料</h3><pre class="whitespace-pre-wrap text-xs">${val('references')}</pre>`: ''}
+        <hr/>
+        <h3>活動照片（最終會被放在最後一頁/區段）</h3>
+        <div class="grid grid-cols-2 gap-3">
+          ${[...thumbs.querySelectorAll('img')].map(img => `<img src="${img.src}" class="rounded-lg"/>`).join('')}
+        </div>`;
+      preview.innerHTML = html;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
 </body>
 </html>
