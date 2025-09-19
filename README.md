@@ -68,8 +68,6 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 ---
 
 ## 後續規劃 (Future Plans)
-- [ ] 新增 PDF 輸出（LibreOffice / WeasyPrint）  
-  Add PDF export (LibreOffice / WeasyPrint)  
 - [ ] 改善圖片處理（支援 PNG/WebP、自動壓縮）  
   Improve image handling (support PNG/WebP, auto compression)  
 - [ ] 優化預覽功能（Markdown → HTML 美化）  
